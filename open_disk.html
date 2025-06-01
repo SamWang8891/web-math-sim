@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Function Visualizer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            max-width: 300px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            background: #333;
+            color: white;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="controls">
+            <h3>3D Function Visualizer</h3>
+            
+            <div class="control-group">
+                <label for="functionSelect">Select Function:</label>
+                <select id="functionSelect">
+                    <option value="paraboloid_disk">Paraboloid over Open Disk: z = x² + y²</option>
+                    <option value="saddle_disk">Saddle over Open Disk: z = x² - y²</option>
+                    <option value="wave_disk">Wave over Open Disk: z = sin(√(x² + y²))</option>
+                    <option value="ripple_disk">Ripple over Open Disk: z = cos(x) × cos(y)</option>
+                    <option value="gaussian_disk">Gaussian over Open Disk: z = e^(-(x² + y²))</option>
+                    <option value="cone_disk">Cone over Open Disk: z = √(x² + y²)</option>
+                    <option value="custom_disk">Custom Function over Open Disk</option>
+                </select>
+            </div>
+            
+            <div class="control-group" id="customFunction" style="display: none;">
+                <label for="customInput">Custom z = f(x,y) over disk:</label>
+                <input type="text" id="customInput" placeholder="x*x + y*y" />
+                <small>Use x, y, Math.sin, Math.cos, Math.sqrt, etc.</small>
+            </div>
+            
+            <div class="control-group">
+                <label for="resolution">Resolution:</label>
+                <input type="range" id="resolution" min="20" max="100" value="50" />
+                <span id="resolutionValue">50</span>
+            </div>
+            
+            <div class="control-group">
+                <label for="range">Disk Radius:</label>
+                <input type="range" id="range" min="1" max="5" value="2" step="0.1" />
+                <span id="rangeValue">2.0</span>
+            </div>
+            
+            <button onclick="updateVisualization()">Update Visualization</button>
+            
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="showDomain" checked /> Show Domain (Open Disk)
+                </label>
+            </div>
+            
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="showProjection" /> Show Vertical Projection Lines
+                </label>
+            </div>
+            
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="wireframe" /> Wireframe Mode
+                </label>
+            </div>
+        </div>
+        
+        <div id="info">
+            Use mouse to rotate, scroll to zoom<br>
+            Left click + drag: Rotate<br>
+            Right click + drag: Pan<br>
+            Scroll: Zoom
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, mesh, controls;
+        let currentGeometry;
+        let domainMesh, projectionLines;
+        
+        // Initialize the 3D scene
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+            
+            // Camera setup - position to show Z pointing up
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(8, 8, 8);
+            camera.up.set(0, 0, 1); // Set Z as up direction
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+            
+            const pointLight = new THREE.PointLight(0x4CAF50, 0.6);
+            pointLight.position.set(-10, 10, -10);
+            scene.add(pointLight);
+            
+            // Add coordinate axes with correct colors and labels
+            const axesHelper = new THREE.AxesHelper(6);
+            scene.add(axesHelper);
+            
+            // Add axis labels
+            const loader = new THREE.FontLoader();
+            
+            // Create text geometries for axis labels
+            function createAxisLabel(text, position, color) {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = 128;
+                canvas.height = 64;
+                
+                context.fillStyle = color;
+                context.font = '32px Arial';
+                context.textAlign = 'center';
+                context.fillText(text, 64, 40);
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                const material = new THREE.SpriteMaterial({ map: texture });
+                const sprite = new THREE.Sprite(material);
+                sprite.position.copy(position);
+                sprite.scale.set(0.5, 0.25, 1);
+                
+                return sprite;
+            }
+            
+            // Add X, Y, Z labels with correct colors (X=red, Y=green, Z=blue)
+            const xLabel = createAxisLabel('X', new THREE.Vector3(6.5, 0, 0), '#ff0000');
+            const yLabel = createAxisLabel('Y', new THREE.Vector3(0, 6.5, 0), '#00ff00');
+            const zLabel = createAxisLabel('Z', new THREE.Vector3(0, 0, 6.5), '#0000ff');
+            
+            scene.add(xLabel);
+            scene.add(yLabel);
+            scene.add(zLabel);
+            
+            // Add grid in XY plane (z = 0)
+            const gridHelper = new THREE.GridHelper(10, 20, 0x444444, 0x222222);
+            gridHelper.rotateX(Math.PI / 2); // Rotate to lie in XY plane
+            scene.add(gridHelper);
+            
+            // Simple orbit controls implementation
+            setupControls();
+            
+            // Initial visualization
+            updateVisualization();
+            
+            // Event listeners
+            document.getElementById('functionSelect').addEventListener('change', function() {
+                const customDiv = document.getElementById('customFunction');
+                customDiv.style.display = this.value === 'custom_disk' ? 'block' : 'none';
+                updateVisualization();
+            });
+            
+            document.getElementById('resolution').addEventListener('input', function() {
+                document.getElementById('resolutionValue').textContent = this.value;
+            });
+            
+            document.getElementById('range').addEventListener('input', function() {
+                document.getElementById('rangeValue').textContent = this.value;
+            });
+            
+            document.getElementById('showDomain').addEventListener('change', updateVisualization);
+            document.getElementById('showProjection').addEventListener('change', updateVisualization);
+            
+            document.getElementById('wireframe').addEventListener('change', function() {
+                if (mesh) {
+                    mesh.material.wireframe = this.checked;
+                }
+            });
+            
+            window.addEventListener('resize', onWindowResize);
+            
+            animate();
+        }
+        
+        function setupControls() {
+            let isMouseDown = false;
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetRotationX = 0;
+            let targetRotationY = 0;
+            let rotationX = 0;
+            let rotationY = 0;
+            
+            renderer.domElement.addEventListener('mousedown', function(event) {
+                isMouseDown = true;
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            });
+            
+            renderer.domElement.addEventListener('mousemove', function(event) {
+                if (isMouseDown) {
+                    const deltaX = event.clientX - mouseX;
+                    const deltaY = event.clientY - mouseY;
+                    
+                    // Swapped mouse controls: left/right controls elevation, up/down controls horizontal rotation
+                    targetRotationX += deltaX * 0.01;  // Left/right drag changes elevation (swapped left/right direction)
+                    targetRotationY -= deltaY * 0.01;  // Up/down drag changes horizontal rotation
+                    
+                    mouseX = event.clientX;
+                    mouseY = event.clientY;
+                }
+            });
+            
+            renderer.domElement.addEventListener('mouseup', function() {
+                isMouseDown = false;
+            });
+            
+            renderer.domElement.addEventListener('wheel', function(event) {
+                const zoomSpeed = 0.1;
+                const zoom = event.deltaY > 0 ? 1 + zoomSpeed : 1 - zoomSpeed;
+                camera.position.multiplyScalar(zoom);
+                event.preventDefault();
+            });
+            
+            function updateCameraPosition() {
+                const radius = camera.position.length();
+                
+                // Update camera position with Z pointing up
+                const spherical = new THREE.Spherical();
+                spherical.setFromVector3(camera.position);
+                spherical.theta += (targetRotationY - rotationY) * 0.1;
+                spherical.phi += (targetRotationX - rotationX) * 0.1;
+                spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+                
+                camera.position.setFromSpherical(spherical);
+                camera.up.set(0, 0, 1); // Ensure Z remains up
+                camera.lookAt(0, 0, 0);
+                
+                rotationX += (targetRotationX - rotationX) * 0.1;
+                rotationY += (targetRotationY - rotationY) * 0.1;
+                
+                requestAnimationFrame(updateCameraPosition);
+            }
+            
+            updateCameraPosition();
+        }
+        
+        function getFunctionValue(x, y, functionType, customFunc) {
+            try {
+                switch(functionType) {
+                    case 'paraboloid_disk':
+                        return x * x + y * y;
+                    case 'saddle_disk':
+                        return x * x - y * y;
+                    case 'wave_disk':
+                        return Math.sin(Math.sqrt(x * x + y * y));
+                    case 'ripple_disk':
+                        return Math.cos(x) * Math.cos(y);
+                    case 'gaussian_disk':
+                        return Math.exp(-(x * x + y * y));
+                    case 'cone_disk':
+                        return Math.sqrt(x * x + y * y);
+                    case 'custom_disk':
+                        return eval(customFunc.replace(/x/g, x).replace(/y/g, y));
+                    default:
+                        return 0;
+                }
+            } catch (e) {
+                return 0; // Return 0 for invalid custom functions
+            }
+        }
+        
+        function updateVisualization() {
+            // Remove existing meshes
+            if (mesh) {
+                scene.remove(mesh);
+                if (currentGeometry) {
+                    currentGeometry.dispose();
+                }
+            }
+            if (domainMesh) {
+                scene.remove(domainMesh);
+                if (domainMesh.userData.border) {
+                    scene.remove(domainMesh.userData.border);
+                }
+            }
+            if (projectionLines) {
+                scene.remove(projectionLines);
+            }
+            
+            const functionType = document.getElementById('functionSelect').value;
+            const resolution = parseInt(document.getElementById('resolution').value);
+            const radius = parseFloat(document.getElementById('range').value);
+            const customFunc = document.getElementById('customInput').value || 'x*x + y*y';
+            const wireframe = document.getElementById('wireframe').checked;
+            const showDomain = document.getElementById('showDomain').checked;
+            const showProjection = document.getElementById('showProjection').checked;
+            
+            // Create the 3D function surface over the disk
+            const geometry = new THREE.CircleGeometry(radius, resolution);
+            
+            // Convert circle geometry to have vertices we can modify
+            const positions = [];
+            const indices = [];
+            
+            // Center point
+            positions.push(0, 0, getFunctionValue(0, 0, functionType, customFunc));
+            
+            // Create vertices in a circular pattern
+            for (let i = 0; i <= resolution; i++) {
+                const angle = (i / resolution) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                const z = getFunctionValue(x, y, functionType, customFunc);
+                positions.push(x, y, z); // x, y, f(x,y)
+            }
+            
+            // Create triangular faces from center to edge
+            for (let i = 0; i < resolution; i++) {
+                indices.push(0, i + 1, ((i + 1) % resolution) + 1);
+            }
+            
+            // Create more detailed surface by adding concentric rings
+            const rings = Math.floor(resolution / 4);
+            let vertexIndex = resolution + 1;
+            
+            for (let ring = 1; ring < rings; ring++) {
+                const ringRadius = (ring / rings) * radius;
+                const ringVertices = Math.floor(resolution * (ring / rings)) + 8;
+                
+                for (let i = 0; i <= ringVertices; i++) {
+                    const angle = (i / ringVertices) * Math.PI * 2;
+                    const x = Math.cos(angle) * ringRadius;
+                    const y = Math.sin(angle) * ringRadius;
+                    const z = getFunctionValue(x, y, functionType, customFunc);
+                    positions.push(x, y, z); // x, y, f(x,y)
+                }
+                
+                // Connect this ring to the previous ring
+                const prevRingStart = ring === 1 ? 1 : vertexIndex - Math.floor(resolution * ((ring - 1) / rings)) - 8;
+                const prevRingSize = ring === 1 ? resolution : Math.floor(resolution * ((ring - 1) / rings)) + 8;
+                const currentRingStart = vertexIndex;
+                const currentRingSize = ringVertices;
+                
+                for (let i = 0; i < Math.min(prevRingSize, currentRingSize); i++) {
+                    const p1 = prevRingStart + i;
+                    const p2 = prevRingStart + ((i + 1) % prevRingSize);
+                    const c1 = currentRingStart + Math.floor((i / prevRingSize) * currentRingSize);
+                    const c2 = currentRingStart + Math.floor(((i + 1) / prevRingSize) * currentRingSize);
+                    
+                    indices.push(p1, c1, p2);
+                    indices.push(p2, c1, c2);
+                }
+                
+                vertexIndex += ringVertices + 1;
+            }
+            
+            const functionGeometry = new THREE.BufferGeometry();
+            functionGeometry.setIndex(indices);
+            functionGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            functionGeometry.computeVertexNormals();
+            
+            currentGeometry = functionGeometry;
+            
+            // Create material for the function surface
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x4CAF50,
+                shininess: 100,
+                wireframe: wireframe,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            // Create mesh for the function
+            mesh = new THREE.Mesh(functionGeometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+            
+            // Show the domain (open disk) at z = 0 in the XY plane
+            if (showDomain) {
+                const domainGeometry = new THREE.CircleGeometry(radius, resolution);
+                // Keep the disk in the XY plane (z = 0)
+                
+                const domainMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xff6b6b,
+                    shininess: 50,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                
+                domainMesh = new THREE.Mesh(domainGeometry, domainMaterial);
+                domainMesh.position.y = 0; // Position at y = 0 (XZ plane)
+                scene.add(domainMesh);
+                
+                // Add border to emphasize it's an open disk
+                const borderGeometry = new THREE.RingGeometry(radius - 0.02, radius, resolution);
+                const borderMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xff0000,
+                    side: THREE.DoubleSide
+                });
+                const borderMesh = new THREE.Mesh(borderGeometry, borderMaterial);
+                borderMesh.position.z = 0.001; // Slightly above the disk in z
+                scene.add(borderMesh);
+                
+                domainMesh.userData.border = borderMesh;
+            }
+            
+            // Show vertical projection lines from domain to function surface
+            if (showProjection) {
+                const linePositions = [];
+                const numLines = 16;
+                
+                for (let i = 0; i < numLines; i++) {
+                    const angle = (i / numLines) * Math.PI * 2;
+                    for (let r = 0.2; r <= radius; r += 0.4) {
+                        const x = Math.cos(angle) * r;
+                        const y = Math.sin(angle) * r;
+                        const z = getFunctionValue(x, y, functionType, customFunc);
+                        
+                        // Line from domain (at z=0) to function surface (at z=f(x,y))
+                        linePositions.push(x, y, 0);     // Point on domain (XY plane)
+                        linePositions.push(x, y, z);     // Point on function surface
+                    }
+                }
+                
+                const lineGeometry = new THREE.BufferGeometry();
+                lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+                
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: 0x888888,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                
+                projectionLines = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(projectionLines);
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Initialize when page loads
+        init();
+    </script>
+</body>
+</html>
