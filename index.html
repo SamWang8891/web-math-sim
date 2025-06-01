@@ -152,19 +152,16 @@
             }
         }
     </style>
-    <script>
-        function openDisk() {
-            window.location.href = window.location.origin + '/open_disk.html';
-        }
-    </script>
 </head>
 <body>
     <div class="container">
         <h1 class="title">Sites List</h1>
         <div class="button-container">
-            <a href="#" class="action-button" onclick="openDisk()">
+            <a href="#" class="action-button" onclick="window.location.href = window.location.origin + '/open_disk.html';">
                 <span class="icon">💾</span>
-                Open Disk
+            </a>
+             <a href="#" class="action-button" onclick="window.location.href = window.location.origin + '/orthogonal_gradient_theorem.html';">
+                <span class="icon">💾</span>
             </a>
             <!-- Add more buttons here as needed -->
         </div>
