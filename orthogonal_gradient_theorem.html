@@ -16,7 +16,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -25,30 +25,30 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             overflow: hidden;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        
+
         .header h1 {
             margin: 0;
             font-size: 2.5em;
             font-weight: 300;
         }
-        
+
         .header p {
             margin: 10px 0 0 0;
             font-size: 1.2em;
             opacity: 0.9;
         }
-        
+
         .content {
             padding: 30px;
         }
-        
+
         .section {
             margin-bottom: 40px;
             padding: 25px;
@@ -56,13 +56,13 @@
             border-radius: 10px;
             border-left: 5px solid #667eea;
         }
-        
+
         .section h2 {
             color: #333;
             margin-top: 0;
             font-size: 1.8em;
         }
-        
+
         .theorem-box {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -71,17 +71,11 @@
             margin: 20px 0;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
-        
-        .theorem-box .MathJax {
+
+        .math-display .MathJax {
             color: black !important;
         }
-        
-        .theorem-box .math-display {
-            background: rgba(255, 255, 255, 0.9);
-            color: black;
-            border-radius: 5px;
-        }
-        
+
         .proof-box {
             background: #e8f4f8;
             border: 2px solid #3498db;
@@ -89,7 +83,7 @@
             border-radius: 10px;
             margin: 20px 0;
         }
-        
+
         .interactive-section {
             background: white;
             border: 2px solid #667eea;
@@ -97,7 +91,7 @@
             padding: 25px;
             margin: 20px 0;
         }
-        
+
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -105,19 +99,19 @@
             margin: 20px 0;
             align-items: center;
         }
-        
+
         .control-group {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 5px;
         }
-        
+
         .control-group label {
             font-weight: bold;
             color: #333;
         }
-        
+
         input[type="range"] {
             width: 150px;
             height: 8px;
@@ -126,7 +120,7 @@
             outline: none;
             -webkit-appearance: none;
         }
-        
+
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -136,7 +130,7 @@
             background: #667eea;
             cursor: pointer;
         }
-        
+
         .plot-container {
             width: 100%;
             height: 500px;
@@ -145,7 +139,7 @@
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        
+
         .explanation {
             background: #fff3cd;
             border: 2px solid #ffc107;
@@ -153,7 +147,7 @@
             border-radius: 10px;
             margin: 20px 0;
         }
-        
+
         .math-display {
             text-align: center;
             margin: 20px 0;
@@ -162,7 +156,7 @@
             border-radius: 8px;
             border: 1px solid #dee2e6;
         }
-        
+
         .example-box {
             background: #d4edda;
             border: 2px solid #28a745;
@@ -170,20 +164,20 @@
             border-radius: 10px;
             margin: 20px 0;
         }
-        
+
         .highlight {
             background: #ffeb3b;
             padding: 2px 5px;
             border-radius: 3px;
         }
-        
+
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin: 20px 0;
         }
-        
+
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
@@ -200,7 +194,7 @@
             <h1>The Orthogonal Gradient Theorem</h1>
             <p>Understanding the fundamental relationship between gradients and curves at extrema</p>
         </div>
-        
+
         <div class="content">
             <!-- Theorem Statement -->
             <div class="section">
@@ -224,7 +218,7 @@
                     <li><strong>The foundation of Lagrange multipliers:</strong> This orthogonality condition is what makes constrained optimization possible</li>
                     <li><strong>Geometric intuition:</strong> It connects the analytical concept of gradients with the geometric idea of perpendicularity</li>
                 </ul>
-                
+
                 <div class="explanation">
                     <strong>Think of it this way:</strong> Imagine you're walking along a mountain path (the curve). The gradient points in the direction of steepest ascent from any point. When you reach the highest point on your path, the direction of steepest ascent must be pointing "off the path" - perpendicular to your direction of travel!
                 </div>
@@ -236,22 +230,22 @@
                 <div class="proof-box">
                     <h3>Proof Outline</h3>
                     <p>We show that \(\nabla f\) is orthogonal to the curve's tangent vector \(\mathbf{r}'(t)\) at \(P_0\).</p>
-                    
+
                     <p><strong>Step 1:</strong> The values of \(f\) on curve \(C\) are given by the composition:</p>
                     <div class="math-display">
                         \[f(x(t), y(t), z(t))\]
                     </div>
-                    
+
                     <p><strong>Step 2:</strong> By the Chain Rule, the derivative with respect to \(t\) is:</p>
                     <div class="math-display">
                         \[\frac{df}{dt} = \frac{\partial f}{\partial x}\frac{dx}{dt} + \frac{\partial f}{\partial y}\frac{dy}{dt} + \frac{\partial f}{\partial z}\frac{dz}{dt} = \nabla f \cdot \mathbf{r}'\]
                     </div>
-                    
+
                     <p><strong>Step 3:</strong> At any point \(P_0\) where \(f\) has a local maximum or minimum relative to its values on the curve:</p>
                     <div class="math-display">
                         \[\frac{df}{dt} = 0 \quad \Rightarrow \quad \nabla f \cdot \mathbf{r}' = 0\]
                     </div>
-                    
+
                     <p><strong>Conclusion:</strong> Since the dot product is zero, \(\nabla f\) and \(\mathbf{r}'\) are orthogonal! ∎</p>
                 </div>
             </div>
@@ -262,7 +256,7 @@
                 <div class="interactive-section">
                     <h3>Visualizing the Theorem</h3>
                     <p>Below, we show a 3D surface \(f(x,y) = ax^2 + by^2 + c\) with a parametric curve. Watch how the gradient vector becomes orthogonal to the curve at extrema!</p>
-                    
+
                     <div class="controls">
                         <div class="control-group">
                             <label>Parameter a:</label>
@@ -285,9 +279,9 @@
                             <span id="value-t">0.0</span>
                         </div>
                     </div>
-                    
+
                     <div id="plot3d" class="plot-container"></div>
-                    
+
                     <div class="math-display">
                         <p><strong>Current Function:</strong> \(f(x,y) = \) <span id="function-display">x^2 - 0.5y^2</span></p>
                         <p><strong>Curve:</strong> \(\mathbf{r}(t) = \cos(t)\mathbf{i} + \sin(t)\mathbf{j}\)</p>
@@ -304,9 +298,9 @@
                 <div class="interactive-section">
                     <h3>Understanding the Orthogonality</h3>
                     <p>This 2D view shows how the gradient vector (red) relates to the curve tangent (blue) at different points:</p>
-                    
+
                     <div id="plot2d" class="plot-container"></div>
-                    
+
                     <div class="explanation">
                         <strong>Key Observations:</strong>
                         <ul>
@@ -322,7 +316,7 @@
             <!-- Specific Examples -->
             <div class="section">
                 <h2>📚 Specific Examples</h2>
-                
+
                 <div class="grid">
                     <div class="example-box">
                         <h3>Example 1: Circle on a Paraboloid</h3>
@@ -330,7 +324,7 @@
                         <p><strong>Constraint:</strong> \(x^2 + y^2 = 1\) (unit circle)</p>
                         <p><strong>Solution:</strong> On the circle, \(f\) has constant value 1, so every point is both a max and min! The gradient \(\nabla f = 2x\mathbf{i} + 2y\mathbf{j}\) points radially outward, perpendicular to the circle everywhere.</p>
                     </div>
-                    
+
                     <div class="example-box">
                         <h3>Example 2: Saddle Point Function</h3>
                         <p><strong>Function:</strong> \(f(x,y) = x^2 - y^2\)</p>
@@ -344,7 +338,7 @@
             <div class="section">
                 <h2>🔧 Applications</h2>
                 <h3>Where This Theorem is Used:</h3>
-                
+
                 <div class="grid">
                     <div style="background: #e3f2fd; padding: 20px; border-radius: 10px;">
                         <h4>🎯 Lagrange Multipliers</h4>
@@ -354,19 +348,19 @@
                         </div>
                         <p>This says both gradients are parallel (orthogonal to the constraint surface).</p>
                     </div>
-                    
+
                     <div style="background: #f3e5f5; padding: 20px; border-radius: 10px;">
                         <h4>📐 Geometric Optimization</h4>
                         <p>Finding shortest distances, largest areas, optimal shapes under constraints. For example: finding the point on a curve closest to the origin.</p>
                     </div>
                 </div>
-                
+
                 <div class="grid">
                     <div style="background: #e8f5e8; padding: 20px; border-radius: 10px;">
                         <h4>⚡ Physics Applications</h4>
                         <p>In physics, this theorem explains why equipotential lines are perpendicular to electric field lines, and why particles move along paths where forces are balanced.</p>
                     </div>
-                    
+
                     <div style="background: #fff3e0; padding: 20px; border-radius: 10px;">
                         <h4>💰 Economics</h4>
                         <p>Optimizing utility functions subject to budget constraints. The gradient of utility must be proportional to the gradient of the budget constraint at optimal choices.</p>
@@ -412,7 +406,7 @@
             document.getElementById('value-b').textContent = currentB.toFixed(1);
             document.getElementById('value-c').textContent = currentC.toFixed(1);
             document.getElementById('value-t').textContent = currentT.toFixed(1);
-            
+
             // Update function display
             let funcStr = '';
             if (currentA !== 0) funcStr += (currentA === 1 ? '' : (currentA === -1 ? '-' : currentA.toFixed(1))) + 'x²';
@@ -429,7 +423,7 @@
             }
             if (!funcStr) funcStr = '0';
             document.getElementById('function-display').textContent = funcStr;
-            
+
             // Update gradient display
             let gradStr = '';
             if (currentA !== 0) gradStr += (currentA * 2 === 2 ? '2' : (currentA * 2).toFixed(1)) + 'x𝐢';
@@ -440,7 +434,7 @@
             }
             if (!gradStr) gradStr = '𝟎';
             document.getElementById('gradient-display').textContent = gradStr;
-            
+
             // Calculate dot product at current t
             let x = Math.cos(currentT);
             let y = Math.sin(currentT);
@@ -449,7 +443,7 @@
             let tangentX = -Math.sin(currentT);
             let tangentY = Math.cos(currentT);
             let dotProduct = gradX * tangentX + gradY * tangentY;
-            
+
             document.getElementById('dot-product').textContent = dotProduct.toFixed(3);
         }
 
@@ -458,7 +452,7 @@
             const x = [];
             const y = [];
             const z = [];
-            
+
             for (let i = -2; i <= 2; i += 0.2) {
                 const row_x = [];
                 const row_y = [];
@@ -472,13 +466,13 @@
                 y.push(row_y);
                 z.push(row_z);
             }
-            
+
             // Parametric curve
             const t_vals = [];
             const curve_x = [];
             const curve_y = [];
             const curve_z = [];
-            
+
             for (let t = 0; t <= 2 * Math.PI; t += 0.1) {
                 t_vals.push(t);
                 const cx = Math.cos(t);
@@ -487,26 +481,26 @@
                 curve_y.push(cy);
                 curve_z.push(currentA * cx * cx + currentB * cy * cy + currentC);
             }
-            
+
             // Current point on curve
             const current_x = Math.cos(currentT);
             const current_y = Math.sin(currentT);
             const current_z = currentA * current_x * current_x + currentB * current_y * current_y + currentC;
-            
+
             // Gradient vector at current point
             const grad_x = 2 * currentA * current_x;
             const grad_y = 2 * currentB * current_y;
             const grad_z = 0; // Since we're on a 2D surface
-            
+
             // Tangent vector at current point
             const tangent_x = -Math.sin(currentT);
             const tangent_y = Math.cos(currentT);
             const tangent_z = 2 * currentA * current_x * (-Math.sin(currentT)) + 2 * currentB * current_y * Math.cos(currentT);
-            
+
             // Normalize for display
             const grad_scale = 0.5;
             const tangent_scale = 0.5;
-            
+
             const data = [
                 {
                     type: 'surface',
@@ -554,7 +548,7 @@
                     name: "Tangent r'"
                 }
             ];
-            
+
             const layout = {
                 title: '3D Visualization: Function, Curve, Gradient & Tangent',
                 scene: {
@@ -567,7 +561,7 @@
                 },
                 margin: { t: 50, l: 0, r: 0, b: 0 }
             };
-            
+
             Plotly.newPlot('plot3d', data, layout);
         }
 
@@ -576,7 +570,7 @@
             const x_2d = [];
             const y_2d = [];
             const z_2d = [];
-            
+
             for (let i = -2; i <= 2; i += 0.1) {
                 for (let j = -2; j <= 2; j += 0.1) {
                     x_2d.push(i);
@@ -584,7 +578,7 @@
                     z_2d.push(currentA * i * i + currentB * j * j + currentC);
                 }
             }
-            
+
             // Curve points
             const curve_x_2d = [];
             const curve_y_2d = [];
@@ -592,13 +586,13 @@
                 curve_x_2d.push(Math.cos(t));
                 curve_y_2d.push(Math.sin(t));
             }
-            
+
             // Gradient field at several points on the curve
             const grad_points_x = [];
             const grad_points_y = [];
             const grad_u = [];
             const grad_v = [];
-            
+
             for (let t = 0; t <= 2 * Math.PI; t += Math.PI/6) {
                 const px = Math.cos(t);
                 const py = Math.sin(t);
@@ -607,25 +601,25 @@
                 grad_u.push(currentA * px * 0.3); // scaled for visibility
                 grad_v.push(currentB * py * 0.3);
             }
-            
+
             // Tangent vectors at the same points
             const tangent_u = [];
             const tangent_v = [];
-            
+
             for (let t = 0; t <= 2 * Math.PI; t += Math.PI/6) {
                 tangent_u.push(-Math.sin(t) * 0.3);
                 tangent_v.push(Math.cos(t) * 0.3);
             }
-            
+
             const data_2d = [
                 {
                     type: 'contour',
                     x: Array.from({length: 41}, (_, i) => -2 + 0.1 * i),
                     y: Array.from({length: 41}, (_, i) => -2 + 0.1 * i),
-                    z: Array.from({length: 41}, (_, i) => 
-                        Array.from({length: 41}, (_, j) => 
-                            currentA * (-2 + 0.1 * i) * (-2 + 0.1 * i) + currentB * (-2 + 0.1 * j) * (-2 + 0.1 * j) + currentC
-                        )
+                    z: Array.from({length: 41}, (_, i) =>
+                            Array.from({length: 41}, (_, j) =>
+                                    currentA * (-2 + 0.1 * i) * (-2 + 0.1 * i) + currentB * (-2 + 0.1 * j) * (-2 + 0.1 * j) + currentC
+                            )
                     ),
                     colorscale: 'Viridis',
                     opacity: 0.6,
@@ -648,7 +642,7 @@
                     showlegend: false
                 }
             ];
-            
+
             // Add gradient arrows
             for (let i = 0; i < grad_points_x.length; i++) {
                 data_2d.push({
@@ -662,7 +656,7 @@
                     name: i === 0 ? 'Gradient ∇f' : undefined
                 });
             }
-            
+
             // Add tangent arrows
             for (let i = 0; i < grad_points_x.length; i++) {
                 data_2d.push({
@@ -676,7 +670,7 @@
                     name: i === 0 ? "Tangent r'" : undefined
                 });
             }
-            
+
             const layout_2d = {
                 title: '2D View: Gradients vs Tangents at Multiple Points',
                 xaxis: { title: 'X', range: [-2, 2] },
@@ -684,7 +678,7 @@
                 margin: { t: 50, l: 50, r: 50, b: 50 },
                 aspectratio: { x: 1, y: 1 }
             };
-            
+
             Plotly.newPlot('plot2d', data_2d, layout_2d);
         }
 
